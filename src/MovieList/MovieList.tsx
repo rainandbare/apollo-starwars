@@ -7,6 +7,7 @@ const GET_FILMS = gql`
       films {
         title
         id
+        isNominated @client
       }
     }
   }
@@ -14,6 +15,7 @@ const GET_FILMS = gql`
 
 export function MovieList() {
   const { data, loading, error } = useQuery(GET_FILMS);
+  // console.log(data?.allFilms.films);
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -21,12 +23,17 @@ export function MovieList() {
   if (error) {
     return <div>{error.message}</div>;
   }
-
   return (
     <div>
-      {data.allFilms.films.map((film: { id: number; title: string }) => (
-        <li key={film.id}>{film.title}</li>
-      ))}
+      {data.allFilms.films.map(
+        (film: { id: string; title: string; isNominated: boolean }) => (
+          <li key={film.id}>
+            <label htmlFor={film.id}>{film.title}</label>
+            <input type="checkbox" name={film.title} id={film.id} />
+            {film.isNominated ? "Nominated" : "Not Nominated"}
+          </li>
+        ),
+      )}
     </div>
   );
 }
